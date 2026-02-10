@@ -21,7 +21,6 @@ if (!$data) $data = $_POST;
 if (
     empty($data['name']) ||
     empty($data['email']) ||
-    empty($data['password']) ||
     empty($data['contact']) ||
     empty($data['sexe']) ||
     empty($data['eglise']) ||
@@ -36,7 +35,13 @@ if (
 
 // Préparation données
 $data['email'] = filter_var($data['email'], FILTER_VALIDATE_EMAIL);
-$data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+$data['contact'] = filter_var($data['contact'], FILTER_VALIDATE_INT);
+$data['paiement'] = filter_var($data['paiement'], FILTER_VALIDATE_INT);
+$data['sexe'] = filter_var($data['sexe'], FILTER_VALIDATE_INT);
+$data['leader_contact'] = filter_var($data['leader_contact'], FILTER_VALIDATE_INT);
+$data['leader_nom'] = filter_var($data['leader_nom'], FILTER_SANITIZE_STRING);
+$data['eglise'] = filter_var($data['eglise'], FILTER_SANITIZE_STRING);
+$data['name'] = filter_var($data['name'], FILTER_SANITIZE_STRING);
 
 $user = new User();
 

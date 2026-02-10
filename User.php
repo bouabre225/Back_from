@@ -26,11 +26,10 @@ class User {
     }*/
 
     public function create(array $data) {
-        $stmt = $this->db->prepare('insert into users (name, email, password, contact, sexe, eglise, leader_nom, leader_contact, paiement) values (:name, :email, :password, :contact, :sexe, :eglise, :leader_nom, :leader_contact, :paiement)');
+        $stmt = $this->db->prepare('insert into users (name, email, contact, sexe, eglise, leader_nom, leader_contact, paiement) values (:name, :email, :contact, :sexe, :eglise, :leader_nom, :leader_contact, :paiement)');
         return $stmt->execute([
             'name' => $data['name'],
             'email' => $data['email'],
-            'password' => $data['password'],
             'contact' => $data['contact'],
             'sexe' => $data['sexe'],
             'eglise' => $data['eglise'],
