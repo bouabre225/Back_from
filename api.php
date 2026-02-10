@@ -2,39 +2,45 @@
 
 require_once './User.php';
 
-$user = new User();
-
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $user->create($data);   
-} 
+header("Content-Type: application/json");
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     exit;
 }
 
-//recupération des donnes json ou form-data
-
 $data = json_decode(file_get_contents('php://input'), true);
-
-//si données json
 if (!$data) $data = $_POST;
 
-//vérification des champs
-$name = $data['name'];
-$email = $data['email'];
-$password = $data['password'];
-
-
-//vérification des champs
-if (empty($name) || empty($email) || empty($password)) {
+// Validation
+if (
+    empty($data['name']) ||
+    empty($data['email']) ||
+    empty($data['password'])
+) {
     http_response_code(400);
+    echo json_encode(['error' => 'Champs manquants']);
     exit;
 }
 
-//reponse APi
+// Préparation données
+$data['email'] = filter_var($data['email'], FILTER_VALIDATE_EMAIL);
+$data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+
+$user = new User();
+
+// Création
+$user->create($data);
+
+// Mail
+$user->sendMail(
+    $data['email'],
+    'Confirmation',
+    $user->template('Confirmation', 'Merci de votre inscription')
+);
+
 http_response_code(201);
 echo json_encode([
-    'message' => 'User created successfully'
+    'message' => 'Utilisateur créé',
+    'mail' => 'Mail envoyé'
 ]);
