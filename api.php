@@ -42,7 +42,7 @@ $user->create($data);
 $user->sendMail(
     $data['email'],
     'Confirmation',
-    $user->template('Confirmation', 'Merci de votre inscription')
+    $user->template($data)
 );
 
 http_response_code(201);

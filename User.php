@@ -70,7 +70,7 @@ class User {
         }
     }
 
-    public function template(array $userData, string $eventName = "Convention Annuelle 2025") {
+    public function template(array $userData, string $eventName = "Merci de votre inscription") {
         $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" . urlencode($userData['email']);
         
         return "
