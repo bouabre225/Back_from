@@ -2,13 +2,21 @@
 
 class Database {
     
-    private $host = "127.0.0.1";
-    private $user = "root";
-    private $password = "";
-    private $database = "form";
+    private $host;
+    private $user;
+    private $password;
+    private $database;
     private $charset = "utf8mb4";
 
     private ?PDO $pdo = null;
+
+    public function __construct()
+    {
+        $this->host = $_ENV['DB_HOST'];
+        $this->user = $_ENV['DB_USER'];
+        $this->password = $_ENV['DB_PASSWORD'];
+        $this->database = $_ENV['DB_NAME'];
+    }
 
     public function connect(): PDO
     {
