@@ -16,7 +16,13 @@ if (!$data) $data = $_POST;
 if (
     empty($data['name']) ||
     empty($data['email']) ||
-    empty($data['password'])
+    empty($data['password']) ||
+    empty($data['contact']) ||
+    empty($data['sexe']) ||
+    empty($data['eglise']) ||
+    empty($data['leader_nom']) ||
+    empty($data['leader_contact']) ||
+    empty($data['paiement'])
 ) {
     http_response_code(400);
     echo json_encode(['error' => 'Champs manquants']);
