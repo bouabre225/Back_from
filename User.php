@@ -70,73 +70,132 @@ class User {
         }
     }
 
-    public function template(string $titre, string $message, ?string $ctaUrl = null) {
-        $cta = '';
-    if ($ctaUrl) {
-        $cta = "
-            <tr>
-            <td align='center' style='padding: 30px;'>
-            <a href='{$ctaUrl}'
-            style='background:#4f46e5;color:#ffffff;
-            padding:14px 24px;
-            text-decoration:none;
-            border-radius:6px;
-            display:inline-block;
-            font-weight:bold;'>
-            Voir le détail
-            </a>
-            </td>
-            </tr>";
-                }
+    public function template(array $userData, string $eventName = "Convention Annuelle 2025") {
+        $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" . urlencode($userData['email']);
+        
+        return "
+        <!DOCTYPE html>
+        <html lang='fr'>
+        <head>
+        <meta charset='UTF-8'>
+        <title>Votre Ticket - {$eventName}</title>
+        </head>
+        <body style='margin:0;padding:0;background:#f3f4f6;font-family:Arial,sans-serif;'>
 
-                return "
-            <!DOCTYPE html>
-            <html lang='fr'>
-            <head>
-            <meta charset='UTF-8'>
-            <title>{$titre}</title>
-            </head>
-            <body style='margin:0;padding:0;background:#f3f4f6;'>
+        <table width='100%' cellpadding='0' cellspacing='0'>
+        <tr>
+        <td align='center' style='padding:40px 20px;'>
 
-            <table width='100%' cellpadding='0' cellspacing='0'>
-            <tr>
-            <td align='center'>
+        <!-- Ticket Container -->
+        <table width='600' cellpadding='0' cellspacing='0' style='background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 6px rgba(0,0,0,0.1);'>
 
-            <table width='600' cellpadding='0' cellspacing='0' style='background:#ffffff;margin:40px 0;border-radius:8px;overflow:hidden;'>
+        <!-- Header avec dégradé -->
+        <tr>
+        <td style='background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);padding:30px;text-align:center;'>
+        <h1 style='margin:0;color:#ffffff;font-size:28px;font-weight:bold;'>🎉 TICKET CONFIRMÉ</h1>
+        <p style='margin:10px 0 0 0;color:#e0e7ff;font-size:16px;'>{$eventName}</p>
+        </td>
+        </tr>
 
-            <!-- Header -->
-            <tr>
-            <td style='background:#111827;color:#ffffff;padding:24px;text-align:center;'>
-            <h1 style='margin:0;font-size:22px;'>Mon Application</h1>
-            </td>
-            </tr>
+        <!-- Bande de statut -->
+        <tr>
+        <td style='background:#10b981;padding:12px;text-align:center;'>
+        <span style='color:#ffffff;font-weight:bold;font-size:14px;'>✓ INSCRIPTION VALIDÉE</span>
+        </td>
+        </tr>
 
-            <!-- Content -->
-            <tr>
-            <td style='padding:32px;color:#111827;font-family:Arial,sans-serif;font-size:16px;line-height:1.6;'>
-            <h2 style='margin-top:0;color:#111827;'>{$titre}</h2>
-            <p>{$message}</p>
-            </td>
-            </tr>
+        <!-- Informations du participant -->
+        <tr>
+        <td style='padding:30px;'>
+        
+        <div style='text-align:center;margin-bottom:25px;'>
+        <h2 style='margin:0 0 5px 0;color:#111827;font-size:24px;'>{$userData['name']}</h2>
+        <p style='margin:0;color:#6b7280;font-size:14px;'>{$userData['email']}</p>
+        </div>
 
-            {$cta}
+        <!-- QR Code -->
+        <div style='text-align:center;margin:25px 0;'>
+        <img src='{$qrCodeUrl}' alt='QR Code' style='border:3px solid #e5e7eb;border-radius:8px;padding:10px;background:#ffffff;'>
+        <p style='margin:10px 0 0 0;color:#6b7280;font-size:12px;'>Présentez ce QR code à l'entrée</p>
+        </div>
 
-            <!-- Footer -->
-            <tr>
-            <td style='background:#f9fafb;color:#6b7280;
-            padding:20px;text-align:center;font-size:12px;'>
-            © " . date('Y') . " Mon Application - Email automatique
-            </td>
-            </tr>
+        <!-- Détails en colonnes -->
+        <table width='100%' cellpadding='0' cellspacing='0' style='margin-top:30px;'>
+        <tr>
+        <td width='50%' style='padding:15px;background:#f9fafb;border-radius:8px;'>
+        <p style='margin:0;color:#6b7280;font-size:12px;font-weight:bold;'>📞 CONTACT</p>
+        <p style='margin:5px 0 0 0;color:#111827;font-size:14px;'>{$userData['contact']}</p>
+        </td>
+        <td width='10'></td>
+        <td width='50%' style='padding:15px;background:#f9fafb;border-radius:8px;'>
+        <p style='margin:0;color:#6b7280;font-size:12px;font-weight:bold;'>👤 SEXE</p>
+        <p style='margin:5px 0 0 0;color:#111827;font-size:14px;'>" . strtoupper($userData['sexe']) . "</p>
+        </td>
+        </tr>
+        </table>
 
-            </table>
+        <table width='100%' cellpadding='0' cellspacing='0' style='margin-top:15px;'>
+        <tr>
+        <td width='50%' style='padding:15px;background:#f9fafb;border-radius:8px;'>
+        <p style='margin:0;color:#6b7280;font-size:12px;font-weight:bold;'>⛪ ÉGLISE</p>
+        <p style='margin:5px 0 0 0;color:#111827;font-size:14px;'>{$userData['eglise']}</p>
+        </td>
+        <td width='10'></td>
+        <td width='50%' style='padding:15px;background:#f9fafb;border-radius:8px;'>
+        <p style='margin:0;color:#6b7280;font-size:12px;font-weight:bold;'>💳 PAIEMENT</p>
+        <p style='margin:5px 0 0 0;color:#111827;font-size:14px;font-weight:bold;color:#10b981;'>" . strtoupper($userData['paiement']) . "</p>
+        </td>
+        </tr>
+        </table>
 
-            </td>
-            </tr>
-            </table>
+        <!-- Informations Leader -->
+        <div style='margin-top:25px;padding:20px;background:#fef3c7;border-left:4px solid #f59e0b;border-radius:8px;'>
+        <p style='margin:0;color:#92400e;font-size:14px;font-weight:bold;'>👥 Référent Spirituel</p>
+        <p style='margin:8px 0 0 0;color:#78350f;font-size:14px;'>
+        <strong>{$userData['leader_nom']}</strong><br>
+        📞 {$userData['leader_contact']}
+        </p>
+        </div>
 
-            </body>
-            </html>
-            ";
+        <!-- Instructions importantes -->
+        <div style='margin-top:30px;padding:20px;background:#eff6ff;border-radius:8px;'>
+        <p style='margin:0;color:#1e40af;font-size:14px;font-weight:bold;'>ℹ️ Instructions importantes</p>
+        <ul style='margin:10px 0 0 0;padding-left:20px;color:#1e3a8a;font-size:13px;line-height:1.8;'>
+        <li>Présentez-vous 30 minutes avant le début</li>
+        <li>Apportez une pièce d'identité</li>
+        <li>Conservez ce ticket sur votre téléphone</li>
+        <li>En cas de problème, contactez votre leader</li>
+        </ul>
+        </div>
+
+        </td>
+        </tr>
+
+        <!-- Bouton CTA -->
+        <tr>
+        <td align='center' style='padding:0 30px 30px 30px;'>
+        <a href='#' style='display:inline-block;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:#ffffff;padding:15px 40px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:16px;'>
+        📅 Ajouter à mon calendrier
+        </a>
+        </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+        <td style='background:#111827;color:#9ca3af;padding:25px;text-align:center;font-size:12px;'>
+        <p style='margin:0 0 10px 0;'>© " . date('Y') . " - Tous droits réservés</p>
+        <p style='margin:0;color:#6b7280;'>Cet email a été envoyé automatiquement, merci de ne pas y répondre.</p>
+        </td>
+        </tr>
+
+        </table>
+
+        </td>
+        </tr>
+        </table>
+
+        </body>
+        </html>
+        ";
     }
 }
