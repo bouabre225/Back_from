@@ -48,7 +48,7 @@ class User {
         }
 
         $payload = [
-            "from" => getenv('MAIL_FROM_NAME') . " <" . getenv('MAIL_FROM') . ">",
+            "from" => getenv('MAIL_FROM_NAME') . " <" . getenv('MAIL_USERNAME') . ">",
             "to" => [$to],
             "subject" => $subject,
             "html" => $body,
