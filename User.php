@@ -2,10 +2,6 @@
 
 require_once './Database.php';
 
-// Configuration for mail sending
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
 require __DIR__ . '/vendor/autoload.php';
 
 class User {
