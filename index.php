@@ -1,6 +1,11 @@
 <?php
 
+require_once __DIR__ . '/vendor/autoload.php';
 require_once './User.php';
+
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
 
 // CORS headers
 header("Access-Control-Allow-Origin: *");
@@ -29,19 +34,19 @@ if (
     empty($data['paiement'])
 ) {
     http_response_code(400);
-    echo json_encode(['error' => 'Champs manquants']);
+    echo json_encode(['error' => 'Champs manquants: ' . implode(', ', $fields)]);
     exit;
 }
 
 // Préparation données
 $data['email'] = filter_var($data['email'], FILTER_VALIDATE_EMAIL);
-$data['contact'] = filter_var($data['contact'], FILTER_VALIDATE_INT);
-$data['paiement'] = filter_var($data['paiement'], FILTER_VALIDATE_INT);
-$data['sexe'] = filter_var($data['sexe'], FILTER_VALIDATE_INT);
-$data['leader_contact'] = filter_var($data['leader_contact'], FILTER_VALIDATE_INT);
-$data['leader_nom'] = filter_var($data['leader_nom'], FILTER_SANITIZE_STRING);
-$data['eglise'] = filter_var($data['eglise'], FILTER_SANITIZE_STRING);
-$data['name'] = filter_var($data['name'], FILTER_SANITIZE_STRING);
+$data['name'] = trim(strip_tags($data['name']));
+$data['eglise'] = trim(strip_tags($data['eglise']));
+$data['leader_nom'] = trim(strip_tags($data['leader_nom']));
+$data['paiement'] = trim(strip_tags($data['paiement']));
+$data['sexe'] = trim(strip_tags($data['sexe']));
+$data['contact'] = preg_replace('/\D+/', '', $data['contact']);
+$data['leader_contact'] = preg_replace('/\D+/', '', $data['leader_contact']);
 
 $user = new User();
 

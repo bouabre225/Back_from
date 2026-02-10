@@ -26,7 +26,7 @@ class User {
     }*/
 
     public function create(array $data) {
-        $stmt = $this->db->prepare('insert into users (name, email, contact, sexe, eglise, leader_nom, leader_contact, paiement) values (:name, :email, :contact, :sexe, :eglise, :leader_nom, :leader_contact, :paiement)');
+        $stmt = $this->db->prepare('insert into users (name, email, contact, sexe, eglise, leader_nom, leader_contact, paiement, timestamp, created_at, updated_at) values (:name, :email, :contact, :sexe, :eglise, :leader_nom, :leader_contact, :paiement, :timestamp, :created_at, :updated_at)');
         return $stmt->execute([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -36,6 +36,9 @@ class User {
             'leader_nom' => $data['leader_nom'],
             'leader_contact' => $data['leader_contact'],
             'paiement' => $data['paiement'],
+            'timestamp' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
         ]);
     }
 
