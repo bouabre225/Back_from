@@ -171,15 +171,6 @@ class User {
         </td>
         </tr>
 
-        <!-- Bouton CTA -->
-        <tr>
-        <td align='center' style='padding:0 30px 30px 30px;'>
-        <a href='#' style='display:inline-block;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:#ffffff;padding:15px 40px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:16px;'>
-        📅 Ajouter à mon calendrier
-        </a>
-        </td>
-        </tr>
-
         <!-- Footer -->
         <tr>
         <td style='background:#111827;color:#9ca3af;padding:25px;text-align:center;font-size:12px;'>
