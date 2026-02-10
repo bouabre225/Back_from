@@ -9,7 +9,7 @@ if ($path !== '/' && file_exists($file)) {
 }
 
 // Routes API
-if (str_starts_with($path, '/api')) {
+if (str_starts_with($path, '/index')) {
     header("Content-Type: application/json");
     header("Access-Control-Allow-Origin: *");
     header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
@@ -20,7 +20,7 @@ if (str_starts_with($path, '/api')) {
         exit;
     }
 
-    require __DIR__ . '/api.php';
+    require __DIR__ . '/index.php';
     exit;
 }
 
