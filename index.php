@@ -10,7 +10,7 @@ if (file_exists(__DIR__ . '/.env')) {
     $dotenv->load();
 }
 
-echo json_encode([
+/*echo json_encode([
     'mail_from' => getenv('MAIL_USERNAME'),
     'ffj' => getenv('MAIL_FROM_NAME'),
     'key' => getenv('RESEND_API_KEY'),
@@ -19,7 +19,7 @@ echo json_encode([
     'password' => getenv('DB_PASSWORD'),
     'database' => getenv('DB_NAME')
 ]);
-exit;
+exit;*/
 
 // CORS headers
 header("Access-Control-Allow-Origin: *");
