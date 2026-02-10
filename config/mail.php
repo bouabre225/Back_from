@@ -7,10 +7,10 @@ $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
 return [
-    'host' => $_ENV['MAIL_HOST'],
-    'port' => $_ENV['MAIL_PORT'],
-    'username' => $_ENV['MAIL_USERNAME'],
-    'password' => $_ENV['MAIL_PASSWORD'],
-    'from_email' => $_ENV['MAIL_USERNAME'],
-    'from_name' => $_ENV['MAIL_FROM_NAME']
+    'host' => env('MAIL_HOST'),
+    'port' => env('MAIL_PORT'),
+    'username' => env('MAIL_USERNAME'),
+    'password' => env('MAIL_PASSWORD'),
+    'from_email' => env('MAIL_USERNAME'),
+    'from_name' => env('MAIL_FROM_NAME')
 ];

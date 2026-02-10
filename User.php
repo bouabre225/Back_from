@@ -42,35 +42,54 @@ class User {
         ]);
     }
 
-    public function sendMail(string $to, string $subject, string $body) {
+    public function sendMail(string $to, string $subject, string $body): bool
+    {
+        $apiKey = getenv('RESEND_API_KEY');
 
-        $config = require __DIR__ . '/config/mail.php';
-        $mail = new PHPMailer(true);
-        try {
-            // Configuration du serveur SMTP
-            $mail->isSMTP();
-            $mail->Host = $config['host'];
-            $mail->SMTPAuth = true;
-            $mail->Username = $config['username'];
-            $mail->Password = $config['password'];
-
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port = $config['port'];
-            // Destinataires
-            $mail->setFrom($mail->Username, 'Confirmation');
-            $mail->addAddress($to);
-            // Contenu du mail
-            $mail->isHTML(true);
-            $mail->Subject = $subject;
-            $mail->Body    = $body;
-            $mail->AltBody = strip_tags($body);
-            $mail->send();
-            return true;
-        } catch (Exception $e) {
-            error_log("Erreur lors de l'envoi du mail: " . $mail->ErrorInfo);
+        if (!$apiKey) {
+            error_log("RESEND_API_KEY manquante");
             return false;
         }
+
+        $payload = [
+            "from" => getenv('MAIL_FROM_NAME') . " <" . getenv('MAIL_FROM') . ">",
+            "to" => [$to],
+            "subject" => $subject,
+            "html" => $body,
+        ];
+
+        $ch = curl_init("https://api.resend.com/emails");
+
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
+            CURLOPT_HTTPHEADER => [
+                "Authorization: Bearer {$apiKey}",
+                "Content-Type: application/json",
+            ],
+            CURLOPT_POSTFIELDS => json_encode($payload),
+            CURLOPT_TIMEOUT => 10,
+        ]);
+
+        $response = curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            error_log("Erreur cURL Resend : " . curl_error($ch));
+            curl_close($ch);
+            return false;
+        }
+
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode >= 200 && $httpCode < 300) {
+            return true;
+        }
+
+        error_log("Erreur Resend ({$httpCode}) : " . $response);
+        return false;
     }
+
 
     public function template(array $userData, string $eventName = "Merci de votre inscription") {
         $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" . urlencode($userData['email']);
