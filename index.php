@@ -5,8 +5,16 @@ require_once './User.php';
 
 use Dotenv\Dotenv;
 
-$dotenv = Dotenv::createImmutable(__DIR__);
-$dotenv->load();
+if (file_exists(__DIR__ . '/.env')) {
+    $dotenv = Dotenv::createImmutable(__DIR__);
+    $dotenv->load();
+}
+
+echo json_encode([
+    'mail_from' => getenv('MAIL_FROM'),
+    'ffj' => getenv('MAIL_FROM_NAME')
+]);
+exit;
 
 // CORS headers
 header("Access-Control-Allow-Origin: *");
