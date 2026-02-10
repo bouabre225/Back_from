@@ -12,10 +12,10 @@ class Database {
 
     public function __construct()
     {
-        $this->host = $_ENV['DB_HOST'];
-        $this->user = $_ENV['DB_USER'];
-        $this->password = $_ENV['DB_PASSWORD'];
-        $this->database = $_ENV['DB_NAME'];
+        $this->host = getenv('DB_HOST');
+        $this->user = getenv('DB_USER');
+        $this->password = getenv('DB_PASSWORD');
+        $this->database = getenv('DB_NAME');
     }
 
     public function connect(): PDO

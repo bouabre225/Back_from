@@ -11,9 +11,13 @@ if (file_exists(__DIR__ . '/.env')) {
 }
 
 echo json_encode([
-    'mail_from' => getenv('MAIL_FROM'),
+    'mail_from' => getenv('MAIL_USERNAME'),
     'ffj' => getenv('MAIL_FROM_NAME'),
-    'key' => getenv('RESEND_API_KEY')
+    'key' => getenv('RESEND_API_KEY'),
+    'host' => getenv('DB_HOST'),
+    'user' => getenv('DB_USER'),
+    'password' => getenv('DB_PASSWORD'),
+    'database' => getenv('DB_NAME')
 ]);
 exit;
 
