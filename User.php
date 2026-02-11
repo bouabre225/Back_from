@@ -2,6 +2,10 @@
 
 require_once './Database.php';
 
+// Configuration for mail sending
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 require __DIR__ . '/vendor/autoload.php';
 
 class User {
@@ -40,50 +44,31 @@ class User {
 
     public function sendMail(string $to, string $subject, string $body): bool
     {
-        $apiKey = getenv('RESEND_API_KEY');
+        $mail = new PHPMailer(true);
+        try {
+            // Configuration du serveur SMTP
+            $mail->isSMTP();
+            $mail->Host = getenv('MAIL_HOST');
+            $mail->SMTPAuth = true;
+            $mail->Username = getenv('MAIL_USERNAME');
+            $mail->Password = getenv('MAIL_PASSWORD');
 
-        if (!$apiKey) {
-            error_log("RESEND_API_KEY manquante");
-            return false;
-        }
-
-        $payload = [
-            "from" => getenv('MAIL_FROM_NAME') . " <" . getenv('MAIL_USERNAME') . ">",
-            "to" => [$to],
-            "subject" => $subject,
-            "html" => $body,
-        ];
-
-        $ch = curl_init("https://api.resend.com/emails");
-
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => true,
-            CURLOPT_HTTPHEADER => [
-                "Authorization: Bearer {$apiKey}",
-                "Content-Type: application/json",
-            ],
-            CURLOPT_POSTFIELDS => json_encode($payload),
-            CURLOPT_TIMEOUT => 10,
-        ]);
-
-        $response = curl_exec($ch);
-
-        if (curl_errno($ch)) {
-            error_log("Erreur cURL Resend : " . curl_error($ch));
-            curl_close($ch);
-            return false;
-        }
-
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if ($httpCode >= 200 && $httpCode < 300) {
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port = getenv('MAIL_PORT');
+            // Destinataires
+            $mail->setFrom(getenv('MAIL_USERNAME'), getenv('MAIL_FROM_NAME'));
+            $mail->addAddress($to);
+            // Contenu du mail
+            $mail->isHTML(true);
+            $mail->Subject = $subject;
+            $mail->Body    = $body;
+            $mail->AltBody = strip_tags($body);
+            $mail->send();
             return true;
+        } catch (Exception $e) {
+            error_log("Erreur lors de l'envoi du mail: " . $mail->ErrorInfo);
+            return false;
         }
-
-        error_log("Erreur Resend ({$httpCode}) : " . $response);
-        return false;
     }
 
 

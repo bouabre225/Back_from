@@ -100,7 +100,7 @@ if (!$created) {
 $mailsent = $user->sendMail(
     $data['email'],
     'Confirmation',
-    $user->template($data)
+    $user->template($data, 'Confirmation')
 );
 
 http_response_code(201);
