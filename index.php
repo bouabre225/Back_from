@@ -33,11 +33,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+/*if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['error' => 'Méthode non autorisée']);
     exit;
-}
+}*/
 
 $data = json_decode(file_get_contents('php://input'), true);
 if (!$data) $data = $_POST;
@@ -70,11 +70,34 @@ $data['leader_contact'] = preg_replace('/\D+/', '', $data['leader_contact']);
 
 $user = new User();
 
+
+try {
+    $user->create($data);
+    echo json_encode([
+        'db' => 'ok'
+    ]);
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode([
+        'db' => 'error',
+        'message' => $e->getMessage()
+    ]);
+    exit;
+}
+
 // Création
-$user->create($data);
+$created = $user->create($data);
+
+if (!$created) {
+    http_response_code(500);
+    echo json_encode([
+        'error' => "Erreur lors de l'insertion de la BDD"
+    ]);
+    exit;
+}
 
 // Mail
-$user->sendMail(
+$mailsent = $user->sendMail(
     $data['email'],
     'Confirmation',
     $user->template($data)
@@ -83,5 +106,5 @@ $user->sendMail(
 http_response_code(201);
 echo json_encode([
     'message' => 'Utilisateur créé',
-    'mail' => 'Mail envoyé'
+    'mail' => $mailsent
 ]);
