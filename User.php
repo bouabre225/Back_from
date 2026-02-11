@@ -2,6 +2,10 @@
 
 require_once './Database.php';
 
+use Brevo\Client\Api\TransactionalEmailsApi;
+use Brevo\Client\Configuration;
+use GuzzleHttp\Client;
+
 // Configuration for mail sending
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -42,44 +46,37 @@ class User {
         ]);
     }
 
-    public function sendMail($to, $subject, $html)
+    public function sendMail($toEmail, $subject, $htmlContent)
     {
-        $apiKey = getenv('BREVO_API_KEY');
-        $from   = getenv('MAIL_FROM');
+        try {
+            $config = Configuration::getDefaultConfiguration()
+                ->setApiKey('api-key', getenv('BREVO_API_KEY'));
 
-        $data = [
-            "sender" => [
-                "name" => "Inscription",
-                "email" => $from
-            ],
-            "to" => [
-                ["email" => $to]
-            ],
-            "subject" => $subject,
-            "htmlContent" => $html
-        ];
+            $apiInstance = new TransactionalEmailsApi(
+                new Client(),
+                $config
+            );
 
-        $ch = curl_init();
+            $sendSmtpEmail = new \Brevo\Client\Model\SendSmtpEmail([
+                'subject' => $subject,
+                'htmlContent' => $htmlContent,
+                'sender' => [
+                    'name' => getenv('MAIL_FROM_NAME'),
+                    'email' => getenv('MAIL_FROM')
+                ],
+                'to' => [
+                    ['email' => $toEmail]
+                ]
+            ]);
 
-        curl_setopt($ch, CURLOPT_URL, "https://api.brevo.com/v3/smtp/email");
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            "accept: application/json",
-            "api-key: $apiKey",
-            "content-type: application/json"
-        ]);
+            $result = $apiInstance->sendTransacEmail($sendSmtpEmail);
 
-        $response = curl_exec($ch);
+            return true;
 
-        if (curl_errno($ch)) {
-            throw new Exception('Erreur Brevo: ' . curl_error($ch));
+        } catch (Exception $e) {
+            error_log('Erreur Brevo: ' . $e->getMessage());
+            return false;
         }
-
-        curl_close($ch);
-
-        return $response;
     }
 
 
