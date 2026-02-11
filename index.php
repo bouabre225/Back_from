@@ -54,7 +54,7 @@ if (
     empty($data['paiement'])
 ) {
     http_response_code(400);
-    echo json_encode(['error' => 'Champs manquants: ' . implode(', ', $fields)]);
+    echo json_encode(['error' => 'Champs manquants ']);
     exit;
 }
 
