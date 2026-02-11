@@ -42,33 +42,44 @@ class User {
         ]);
     }
 
-    public function sendMail(string $to, string $subject, string $body): bool
+    public function sendMail($to, $subject, $html)
     {
-        $mail = new PHPMailer(true);
-        try {
-            // Configuration du serveur SMTP
-            $mail->isSMTP();
-            $mail->Host = getenv('MAIL_HOST');
-            $mail->SMTPAuth = true;
-            $mail->Username = getenv('MAIL_USERNAME');
-            $mail->Password = getenv('MAIL_PASSWORD');
+        $apiKey = getenv('BREVO_API_KEY');
+        $from   = getenv('MAIL_FROM');
 
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port = getenv('MAIL_PORT');
-            // Destinataires
-            $mail->setFrom(getenv('MAIL_USERNAME'), getenv('MAIL_FROM_NAME'));
-            $mail->addAddress($to);
-            // Contenu du mail
-            $mail->isHTML(true);
-            $mail->Subject = $subject;
-            $mail->Body    = $body;
-            $mail->AltBody = strip_tags($body);
-            $mail->send();
-            return true;
-        } catch (Exception $e) {
-            error_log("Erreur lors de l'envoi du mail: " . $mail->ErrorInfo);
-            return false;
+        $data = [
+            "sender" => [
+                "name" => "Inscription",
+                "email" => $from
+            ],
+            "to" => [
+                ["email" => $to]
+            ],
+            "subject" => $subject,
+            "htmlContent" => $html
+        ];
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, "https://api.brevo.com/v3/smtp/email");
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "accept: application/json",
+            "api-key: $apiKey",
+            "content-type: application/json"
+        ]);
+
+        $response = curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            throw new Exception('Erreur Brevo: ' . curl_error($ch));
         }
+
+        curl_close($ch);
+
+        return $response;
     }
 
 
