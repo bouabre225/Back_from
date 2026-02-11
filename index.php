@@ -33,11 +33,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 
-/*if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['error' => 'Méthode non autorisée']);
     exit;
-}*/
+}
 
 $data = json_decode(file_get_contents('php://input'), true);
 if (!$data) $data = $_POST;
